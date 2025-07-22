@@ -1,9 +1,10 @@
-FROM rust:1.70
+FROM python:3.11-slim
 
-WORKDIR /usr/src/payments
+WORKDIR /app
 
-COPY . .
+COPY app.py .
+COPY requirements.txt .
 
-RUN cargo build --release
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["./target/release/payments"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
