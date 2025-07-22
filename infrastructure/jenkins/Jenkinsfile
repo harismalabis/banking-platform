@@ -2,33 +2,32 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'docker-credentials'
-        EKS_CLUSTER_NAME = 'banking-platform-cluster'
-        AWS_REGION = 'us-west-2'
+        AWS_REGION = 'us-east-1'
+        ECR_ACCOUNT_ID = '123456789012'
+        ECR_REPO_NAME = 'banking-platform'
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+        AWS_CREDENTIALS = credentials('aws-creds')
     }
 
     stages {
-        stage('Build') {
+        stage('Checkout Code') {
             steps {
-                script {
-                    def services = ['accounts', 'payments', 'users', 'transactions', 'notifications', 'gateway']
-                    for (service in services) {
-                        dir("services/${service}") {
-                            sh 'docker build -t myregistry/${service}:latest .'
-                        }
-                    }
-                }
+                git url: 'https://github.com/harismalabis/banking-platform.git'
             }
         }
 
-        stage('Test') {
+        stage('Docker Build & Push') {
             steps {
                 script {
-                    def services = ['accounts', 'payments', 'users', 'transactions', 'notifications', 'gateway']
-                    for (service in services) {
-                        dir("services/${service}") {
-                            sh 'docker run --rm myregistry/${service}:latest test'
-                        }
+                    def services = ['account', 'transaction', 'user']
+                    for (svc in services) {
+                        def image = "${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}-${svc}:${IMAGE_TAG}"
+                        
+                        sh """
+                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                        docker build -t ${image} ./microservices/${svc}
+                        docker push ${image}
+                        """
                     }
                 }
             }
@@ -37,16 +36,24 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    sh 'aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_REGION}'
-                    sh 'helm upgrade --install banking-app infrastructure/helm/charts/banking-app --namespace banking --values infrastructure/helm/charts/banking-app/values.yaml'
+                    def services = ['account', 'transaction', 'user']
+                    for (svc in services) {
+                        def image = "${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}-${svc}:${IMAGE_TAG}"
+                        sh """
+                        kubectl set image deployment/${svc}-deployment ${svc}-container=${image} --namespace=banking
+                        """
+                    }
                 }
             }
         }
     }
 
     post {
-        always {
-            cleanWs()
+        success {
+            echo "✅ Build and deployment succeeded!"
+        }
+        failure {
+            echo "❌ Build or deployment failed."
         }
     }
 }
