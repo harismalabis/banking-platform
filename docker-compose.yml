@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  accounts:
+    build: ./services/accounts
+    ports:
+      - "5001:5000"
+    depends_on:
+      - db
+
+  user:
+    build: ./services/user
+    ports:
+      - "5002:5000"
+    depends_on:
+      - db
+
+  payment:
+    build: ./services/payment
+    ports:
+      - "5003:5000"
+    depends_on:
+      - db
+
+  transaction:
+    build: ./services/transaction
+    ports:
+      - "5004:5000"
+    depends_on:
+      - db
+
+  notification:
+    build: ./services/notification
+    ports:
+      - "5005:5000"
+    depends_on:
+      - db
+
+  gateway:
+    build: ./services/gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - accounts
+      - user
+      - payment
+      - transaction
+      - notification
+
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: bankdb
+      POSTGRES_USER: bankuser
+      POSTGRES_PASSWORD: bankpass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:
