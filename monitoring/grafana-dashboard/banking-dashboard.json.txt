@@ -1,0 +1,74 @@
+{
+  "annotations": {
+    "title": "Banking Application Dashboard",
+    "description": "Dashboard for monitoring the banking application microservices."
+  },
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Total Transactions",
+      "targets": [
+        {
+          "target": "sum(rate(transactions_total[5m]))",
+          "refId": "A"
+        }
+      ],
+      "xaxis": {
+        "mode": "time"
+      },
+      "yaxis": {
+        "format": "short"
+      }
+    },
+    {
+      "type": "graph",
+      "title": "Account Service Response Time",
+      "targets": [
+        {
+          "target": "avg(rate(account_service_response_time_seconds[5m]))",
+          "refId": "B"
+        }
+      ],
+      "xaxis": {
+        "mode": "time"
+      },
+      "yaxis": {
+        "format": "seconds"
+      }
+    },
+    {
+      "type": "graph",
+      "title": "Payment Service Errors",
+      "targets": [
+        {
+          "target": "sum(rate(payment_service_errors_total[5m]))",
+          "refId": "C"
+        }
+      ],
+      "xaxis": {
+        "mode": "time"
+      },
+      "yaxis": {
+        "format": "short"
+      }
+    },
+    {
+      "type": "graph",
+      "title": "User Service Active Users",
+      "targets": [
+        {
+          "target": "count(user_service_active_users)",
+          "refId": "D"
+        }
+      ],
+      "xaxis": {
+        "mode": "time"
+      },
+      "yaxis": {
+        "format": "short"
+      }
+    }
+  ],
+  "schemaVersion": 26,
+  "version": 1
+}

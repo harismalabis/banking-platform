@@ -1,0 +1,27 @@
+replicaCount: 3
+
+image:
+  repository: your-docker-repo/banking-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+  path: /
+  hosts:
+    - host: chart-example.local
+      paths:
+        - /
+
+resources: {}
+  
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

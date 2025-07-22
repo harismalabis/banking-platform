@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_CREDENTIALS_ID = 'docker-credentials'
+        EKS_CLUSTER_NAME = 'banking-platform-cluster'
+        AWS_REGION = 'us-west-2'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    def services = ['accounts', 'payments', 'users', 'transactions', 'notifications', 'gateway']
+                    for (service in services) {
+                        dir("services/${service}") {
+                            sh 'docker build -t myregistry/${service}:latest .'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    def services = ['accounts', 'payments', 'users', 'transactions', 'notifications', 'gateway']
+                    for (service in services) {
+                        dir("services/${service}") {
+                            sh 'docker run --rm myregistry/${service}:latest test'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to EKS') {
+            steps {
+                script {
+                    sh 'aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_REGION}'
+                    sh 'helm upgrade --install banking-app infrastructure/helm/charts/banking-app --namespace banking --values infrastructure/helm/charts/banking-app/values.yaml'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
