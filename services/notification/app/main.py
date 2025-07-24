@@ -3,13 +3,13 @@ from fastapi import FastAPI
 app = FastAPI()
 
 @app.get("/health")
-async def health():
+def health_check():
     return {"status": "ok"}
 
-@app.get("/notifications/{user_id}")
-async def get_notifications(user_id: str):
-    return {"user_id": user_id, "notifications": ["Email sent", "SMS sent"]}
+@app.post("/notification/send")
+def send_notification(data: dict):
+    return {"message": "Notification sent", "data": data}
 
-@app.post("/notifications")
-async def send_notification(payload: dict):
-    return {"message": "Notification sent", "payload":payload}
+if _name_ == "_main_":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=5003, reload=True)

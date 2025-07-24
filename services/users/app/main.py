@@ -3,13 +3,13 @@ from fastapi import FastAPI
 app = FastAPI()
 
 @app.get("/health")
-async def health():
+def health_check():
     return {"status": "ok"}
 
-@app.get("/users/{user_id}")
-async def get_user(user_id: str):
-    return {"user_id": user_id, "name": "John Doe"}
+@app.get("/users/profile")
+def user_profile():
+    return {"user_id": "u123", "name": "Alice", "email": "alice@example.com"}
 
-@app.post("/users")
-async def create_user(user: dict):
-    return {"message": "User created","user":user}
+if _name_ == "_main_":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=5006, reload=True)

@@ -3,13 +3,13 @@ from fastapi import FastAPI
 app = FastAPI()
 
 @app.get("/health")
-async def health():
+def health_check():
     return {"status": "ok"}
 
-@app.get("/transactions/{transaction_id}")
-async def get_transaction(transaction_id: str):
-    return {"transaction_id": transaction_id, "status": "Completed"}
+@app.post("/transaction/create")
+def create_transaction(data: dict):
+    return {"message": "Transaction recorded", "details": data}
 
-@app.post("/transactions")
-async def create_transaction(data: dict):
-    return {"message": "Transaction created","data":data}
+if _name_ == "_main_":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=5005, reload=True)
