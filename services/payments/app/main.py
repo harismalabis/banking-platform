@@ -12,4 +12,4 @@ async def get_payment(payment_id: str):
 
 @app.post("/payments")
 async def create_payment(payment: dict):
-    return {"message": "Payment processed", "payment": payment}
+    return {"message": "Payment processed", "payment":payment}

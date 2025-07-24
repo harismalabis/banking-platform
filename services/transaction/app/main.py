@@ -12,4 +12,4 @@ async def get_transaction(transaction_id: str):
 
 @app.post("/transactions")
 async def create_transaction(data: dict):
-    return {"message": "Transaction created", "data": data}
+    return {"message": "Transaction created","data":data}

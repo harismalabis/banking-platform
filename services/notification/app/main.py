@@ -12,4 +12,4 @@ async def get_notifications(user_id: str):
 
 @app.post("/notifications")
 async def send_notification(payload: dict):
-    return {"message": "Notification sent", "payload": payload}
+    return {"message": "Notification sent", "payload":payload}

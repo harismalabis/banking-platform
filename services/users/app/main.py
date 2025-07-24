@@ -12,4 +12,4 @@ async def get_user(user_id: str):
 
 @app.post("/users")
 async def create_user(user: dict):
-    return {"message": "User created", "user": user}
+    return {"message": "User created","user":user}

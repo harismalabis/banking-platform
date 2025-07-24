@@ -12,4 +12,4 @@ async def gateway_status():
 
 @app.post("/gateway/route")
 async def route_request(data: dict):
-    return {"message": "Request routed successfully", "data": data}
+    return {"message": "Request routed successfully","data":data}
