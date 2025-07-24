@@ -1,15 +1,12 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    return JSONResponse(content={"status": "ok"}, status_code=200)
 
-@app.get("/accounts/{account_id}")
-async def get_account(account_id: str):
-    return {"account_id": account_id, "balance": 1000.0}
-
-@app.post("/accounts")
-async def create_account(account: dict):
-    return {"message": "Account created", "account":account}
+if __name__ == "_main_":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=5001,reload= True)
