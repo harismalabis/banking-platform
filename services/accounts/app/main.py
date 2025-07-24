@@ -7,6 +7,6 @@ app = FastAPI()
 def health_check():
     return JSONResponse(content={"status": "ok"}, status_code=200)
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=5001,reload= True)
