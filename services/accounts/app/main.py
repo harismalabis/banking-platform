@@ -12,4 +12,4 @@ async def get_account(account_id: str):
 
 @app.post("/accounts")
 async def create_account(account: dict):
-    return {"message": "Account created", "account": account}
+    return {"message": "Account created", "account":account}
